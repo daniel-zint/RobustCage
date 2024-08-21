@@ -74,11 +74,21 @@ void generate_cages(
 
             omp_set_num_threads(12);
 
-            cage_generator.stageInitialize();
+            if (true) {
+                cage_generator.stageInitialize();
 
-            bf::path mesh_init_file = file_out_dir;
-            mesh_init_file.append(file_name + "_cage_init_" + std::to_string(it) + ".obj");
-            OpenMesh::IO::write_mesh(*cage_generator.cage, mesh_init_file.string(), OpenMesh::IO::Options::Default, 15);
+                bf::path mesh_init_file = file_out_dir;
+                mesh_init_file.append(file_name + "_cage_init_" + std::to_string(it) + ".obj");
+                OpenMesh::IO::write_mesh(*cage_generator.cage, mesh_init_file.string(), OpenMesh::IO::Options::Default, 15);
+            }
+            else {
+                // hack to read the init mesh from file
+                bf::path mesh_init_file = file_out_dir;
+                mesh_init_file.append(file_name + "_cage_init_" + std::to_string(it) + ".obj");
+
+                cage_generator.cage = std::make_unique<SM::SMeshT>();
+                OpenMesh::IO::read_mesh(*cage_generator.cage, mesh_init_file.string());
+            }
 
             cage_generator.cageInitializer = nullptr;
             cage_generator.VMesh = nullptr;
